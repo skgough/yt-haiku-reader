@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Haiku Reader</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script defer src="script.js"></script>
+</head>
+
+<body>
+    <h1>r/youtubehaiku browser</h1>
+    <select class='time' title="Posts from...">
+        <option          value="day"  >Past 24 hours</option>
+        <option selected value="week" >Past week</option>
+        <option          value="month">Past month</option>
+        <option          value="year" >Past year</option>
+    </select>
+    <div class='viewer' data-index=0 >
+        <div class='post current'>
+            <div></div>
+        </div>
+        <div class='post next'>
+            <div></div>
+        </div>
+        <div class='post prev'>
+            <div></div>
+        </div>
+    </div>
+    <div class='thumbs'>
+        <div class='tooltip'>Post title</div>
+        <div class='thumbstrip'></div>
+    </div>
+</body>
+</html>
