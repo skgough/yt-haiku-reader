@@ -2,7 +2,7 @@ let timeSelect = document.querySelector('.time')
 let memTime = window.localStorage.getItem('time')
 if (memTime) timeSelect.value = memTime
 timeSelect.addEventListener('change', () => {
-    window.localStorage.setItem('time',timeSelect.value)
+    window.localStorage.setItem('time', timeSelect.value)
     resetViewer()
 })
 let time = timeSelect.value
@@ -11,13 +11,13 @@ let sortSelect = document.querySelector('.sort')
 let memSort = window.localStorage.getItem('sort')
 if (memSort) sortSelect.value = memSort
 sortSelect.addEventListener('change', () => {
-    window.localStorage.setItem('sort',sortSelect.value)
+    window.localStorage.setItem('sort', sortSelect.value)
     resetViewer()
 })
 let sort = sortSelect.value
 
 let hideReadBtn = document.querySelector('.hide-read')
-hideReadBtn.addEventListener('click', () => {hideRead()})
+hideReadBtn.addEventListener('click', () => { hideRead() })
 
 let url
 if (sort === 'top') {
@@ -35,12 +35,12 @@ getJSON(url).then((json) => {
     list = json.data.children.map((each) => each.data)
     for (const index in list) {
         if (!(list[index].media)) {
-            list.splice(index,1)
+            list.splice(index, 1)
         }
     }
     for (const index in list) {
         if (!(list[index].media)) {
-            list.splice(index,1)
+            list.splice(index, 1)
         }
     }
     getThumbnails()
@@ -65,19 +65,19 @@ function resetViewer() {
         list = json.data.children.map((each) => each.data)
         for (const index in list) {
             if (!(list[index].media)) {
-                list.splice(index,1)
+                list.splice(index, 1)
             }
         }
         for (const index in list) {
             if (!(list[index].media)) {
-                list.splice(index,1)
+                list.splice(index, 1)
             }
         }
         if (list.length > 1) {
-            getThumbnails()
-            updateThumbnails()
             let viewer = document.querySelector('.viewer')
             viewer.dataset.index = 0
+            getThumbnails()
+            updateThumbnails()
             document.querySelector('.post.current > div').innerHTML = ''
             document.querySelector('.post.next > div').innerHTML = ''
             document.querySelector('.post.prev > div').innerHTML = ''
@@ -137,9 +137,9 @@ function getPost(index) {
     link.target = '_blank'
     link.innerText = src.title
 
-    let icon = document.createElement('img')
-    icon.src = 'launch.svg'
-    link.appendChild(icon)
+    let launchIcon = document.createElement('img')
+    launchIcon.src = 'launch.svg'
+    link.appendChild(launchIcon)
 
     title.appendChild(link)
 
@@ -151,9 +151,39 @@ function getPost(index) {
     if (readList) {
         readList = JSON.parse(readList)
         let search = readList.find((id) => id === src.id)
-        if (search) input.checked = true
+        if (search) {
+            input.checked = true
+            readMarker.classList.add('read')
+        }
     }
-    input.id = src.id
+
+    let button = document.createElement('button')
+    let text = document.createElement('span')
+    text.innerText = input.checked ? 'Mark unread' : 'Mark read'
+    let markIcon = document.createElement('img')
+    let hoverIcon = document.createElement('img')
+    let readIcon = document.createElement('img')
+    markIcon.src = 'eye.svg'
+    hoverIcon.src = 'hide.svg'
+    readIcon.src = 'read.svg'
+    button.appendChild(markIcon)
+    button.appendChild(hoverIcon)
+    button.appendChild(readIcon)
+    button.appendChild(text)
+
+    button.addEventListener('click', () => {
+        input.checked = !input.checked
+        if (input.checked) {
+            text.innerText = 'Mark unread'
+            readMarker.classList.add('read')
+        } else {
+            text.innerText = 'Mark read'
+            readMarker.classList.remove('read')
+        }
+        let evt = new Event('change')
+        input.dispatchEvent(evt)
+    })
+
     input.addEventListener('change', () => {
         let readList = window.localStorage.getItem('readList')
         if (readList) {
@@ -164,7 +194,7 @@ function getPost(index) {
                 let search = readList.find((id) => id === src.id)
                 if (search) {
                     let index = readList.indexOf(search)
-                    readList.splice(index,1)
+                    readList.splice(index, 1)
                 }
             }
             window.localStorage.setItem('readList', JSON.stringify(readList))
@@ -174,18 +204,16 @@ function getPost(index) {
         }
         updateThumbnails()
     })
-    let label = document.createElement('label')
-    label.htmlFor = src.id
-    label.innerText = "Mark read"
+
 
     readMarker.appendChild(input)
-    readMarker.appendChild(label)
+    readMarker.appendChild(button)
 
     title.appendChild(readMarker)
 
     let thumbnail = document.createElement('div')
     thumbnail.classList.add('thumbnail')
-    
+
     thumbnail.style.backgroundImage = `url(${src.media.oembed.thumbnail_url})`
 
     let embed = htmlDecode(src.media_embed.content)
@@ -233,9 +261,11 @@ function getThumbnails() {
         thumbnail.innerText = list[index].title
         thumbnail.addEventListener('click', () => {
             let viewer = document.querySelector('.viewer')
-            viewer.dataset.index = index
-            updateViewer()
-            updateThumbnails()
+            if (viewer.dataset.index !== index) {
+                viewer.dataset.index = index
+                updateViewer()
+                updateThumbnails()
+            }
         })
         thumbnail.addEventListener('mouseenter', () => {
             let tooltip = document.querySelector('.tooltip')
@@ -245,11 +275,11 @@ function getThumbnails() {
             let offset = e.x - thumbstrip.getBoundingClientRect().x - tooltip.getBoundingClientRect().width / 2
             let boxShadowSize = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size')) / 2
             let max = thumbstrip.getBoundingClientRect().width - tooltip.getBoundingClientRect().width + boxShadowSize
-            if (offset > boxShadowSize && offset < max) {
+            if (offset > boxShadowSize && offset < max + boxShadowSize) {
                 tooltip.style.left = offset + 'px'
             } else if (offset <= boxShadowSize) {
                 tooltip.style.left = boxShadowSize + 'px'
-            } else if (offset > max) {
+            } else if (offset > max + boxShadowSize) {
                 tooltip.style.left = max + 2 * boxShadowSize + 'px'
             }
         })
@@ -371,22 +401,25 @@ function updateThumbnails() {
 }
 function hideRead() {
     let readList = window.localStorage.getItem('readList')
-    let renderedPosts = Array.from(document.querySelectorAll('.post [data-id]'))
     if (readList) {
+        let renderedPosts = Array.from(document.querySelectorAll('.post [data-id]'))
+        let currentID = document.querySelector('.post.current').dataset.id
         readList = JSON.parse(readList)
         for (const id of readList) {
             let search = list.find((post) => post.id === id)
             if (search) {
                 let index = list.indexOf(search)
-                list.splice(index,1)
+                list.splice(index, 1)
                 document.querySelectorAll('.thumbstrip button')[index].remove()
             }
+
             let renderedSearch = renderedPosts.find((post) => post.dataset.id === id)
             if (renderedSearch) {
                 let empty = document.createElement('div')
                 renderedSearch.replaceWith(empty)
             }
         }
+        document.querySelector('.viewer').dataset.index = 0
         getThumbnails()
         updateViewer()
     }
