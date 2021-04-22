@@ -1,23 +1,76 @@
+@import url(fonts.css);
+.hidden {
+    display: none;
+}
 body {
-    margin: auto ;
-    padding: 0 1rem;
-    max-width: 1750px;
-    background: #222;
-    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background: hsl(228, 5%, 25%);
+    font-family: 'IBM Plex Sans';
+    overflow-x: hidden;
+    color: white;
+    position: relative;
+}
+header {
+    padding: .25rem 1rem;
+    background: hsl(228, 5%, 35%);
+    box-shadow: 0 2px 2px hsl(228, 5%, 15%);
+}
+header > div {
+    display: flex;
+    align-items: center;
+    max-width: 100rem;
+    margin: 0 auto;
+    font: 600 .9rem/1 'IBM Plex Sans'
+}
+header > div > * {
+    margin: 0 .5ch;
+}
+select, .hide-read {
+    height: 1.75rem;
+    background: hsl(228, 5%, 25%);
+    color: white;
+    border: 0;
+    border-radius: .25rem;
+    font: 600 .8rem/1.75rem 'IBM Plex Sans';
+    padding: 0 .5rem;
+}
+select:hover, .hide-read:hover {
+    color: hsl(212, 100%, 75%);
+}
+select:hover option {
     color: white;
 }
-select {
-    background: #333;
-    color: white;
-    border: 1px solid #111;
-    border-radius: 3px;
-    padding: .25em .35em;
+.hide-read {
+    display: flex;
+}
+.hide-read img {
+    display: inline-block;
+    height: 1.25rem;
+    margin: .25rem .25rem .25rem 0
+}
+.hide-read img[src*=eye] {
+    display: inline-block;
+}
+.hide-read:hover img[src*=eye] {
+    display: none;
+}
+.hide-read img[src*=hide] {
+    display: none;
+}
+.hide-read:hover img[src*=hide] {
+    display: inline-block;
+}
+
+.viewer,.thumbs {
+    max-width: 100rem;
+    margin: 0 auto;
 }
 .viewer {
     display: grid;
-    margin: auto;
-    grid-template-columns: minmax(100px,250px) minmax(400px, 1250px) minmax(100px,250px);
+    grid-template-columns: minmax(6.25rem,15.625rem) minmax(25rem, 78.125rem) minmax(6.25rem,15.625rem);
     grid-template-rows: 1fr;
+    padding: 1rem 1rem 0 1rem;
     align-items: center;
     grid-template-areas:
       "prev current next";
@@ -27,35 +80,60 @@ select {
 }
 .viewer .current {
     grid-area: current;
-    padding: 0 1rem;
 }
 .viewer .next {
     grid-area: next
+}
+.current > div {
+    padding: 0 .75rem .75rem .75rem;
+    background:hsl(228, 5%, 20%);
+    margin: 0 1rem;
+    border-radius: 1rem;
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
 }
 .post {
     font-size: 0;
     position: relative;
 }
+.post.next [data-id],
+.post.prev [data-id] {
+    padding: 0 .75rem .75rem .75rem;
+    background: hsl(228, 5%, 20%);
+    border-radius: .5rem;
+}
 .post .link {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
+    font-size: .9rem;
     color: white;
-    font-size: 1rem;
-    line-height: 2;
-    width: 100%;
+    height: 1.75rem;
+    padding-bottom: .5rem;
 }
 .post .link a {
+    display: flex;
+    align-items: flex-end;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: lightblue;
+    color: white;
     text-decoration: none;
+}
+.post .link a img {
+    height: 1.25rem;
+    margin-left: .25rem;
+    display: none;
 }
 .post .link a:hover {
     text-decoration: underline;
 }
+.post .link a:hover img {
+    display: inline-block;
+}
 .post .link a:visited {
-    color: hsl(275, 53%, 79%);
+    color: white;
 }
 .post.next .link a,
 .post.prev .link a {
@@ -64,48 +142,69 @@ select {
     max-width: 100%;
 }
 .post .read-marker {
-    width: 8rem;
+    white-space: nowrap;
+    margin-left: 1em;
+    font-size: .8rem;
     text-align: right;
     user-select: none;
 }
+.post .read-marker:hover {
+    color: hsl(212, 100%, 75%)
+}
+.post .read-marker input {
+    margin: .25rem 0 0 0;
+}
+.post .read-marker label {
+    padding-left: 1ex;
+}
+
 .post iframe {
-    border-radius: 5px;
+    border-radius: .25rem;
     box-sizing: border-box;
     width: 100%;
-    height: 50vw;
-    max-height: 80vh;
-    border: 1px solid #111;
+    height: calc((100vw - 36.75rem) * .5625);
+    max-height: 36.7rem;
+}
+.post.current iframe {
+    min-height: 17rem;
 }
 .post .thumbnail {
     position: absolute;
-    box-sizing: border-box;
-    bottom: 0;
-    width: 100%;
-    height: calc(100% - 2rem);
+    height: calc(100% - 3rem);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    border-radius: 5px;
-    border: 1px solid #111;
+    border-radius: .25rem;
+}
+.post.next .thumbnail,
+.post.prev .thumbnail {
+    width: calc(100% - 1.5rem);
+    bottom: .75rem;
+    filter: saturate(.5);
+    transition: .2s filter;
+}
+.post.next:hover .thumbnail,
+.post.prev:hover .thumbnail {
+    filter: none;
 }
 .post.next iframe,
 .post.prev iframe {
-    height: 150px;
+    height: 8.7890625rem;
 }
 @supports(aspect-ratio: 16 / 9) {
     .post.next iframe,
     .post.prev iframe,
-    .post iframe {
-        height: unset;
-        aspect-ratio: 16 / 9;
-    }
+    .post.current iframe,
     .post .thumbnail {
         height: unset;
+        min-height: unset;
+        max-height: unset;
         aspect-ratio: 16 / 9;
     }
 }
 .post.current .thumbnail {
-    width: calc(100% - 2rem);
+    width: calc(100% - 3.5rem);
+    bottom: .75rem;
     transition: visibility step-end .2s , .2s opacity;
 }
 .post.current .loaded .thumbnail {
@@ -120,7 +219,7 @@ select {
     background-color: transparent;
     background-repeat: no-repeat;
     background-size: 40%;
-    background-position: center 65%;
+    background-position: center 60%;
     font-size: 0;
     border: 0;
     filter: drop-shadow(2px 2px 4px black);
@@ -154,25 +253,25 @@ select {
     display: none;
 }
 .thumbs {
-    margin: 2.5rem 0 1rem 0;
+    padding: 2rem 1rem 1rem 1rem;
     position: relative;
 }
 .tooltip {
     opacity: 0;
-    top: -1.75rem;
-    height: 2rem;
+    font: .8rem/1 'IBM Plex Sans';
+    top: .25rem;
     white-space: nowrap;
     overflow: visible;
-    padding: .25em .35em;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    padding: .5em .5em 0 .5em;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
     color: white;
-    border: 1px solid #111;
-    background: #333;
+    background: hsl(228, 5%, 20%);
+    border-bottom: 1rem solid hsl(228, 5%, 20%);
     position: absolute;
     z-index: -1;
 }
-.thumbs:hover .tooltip {
+.thumbstrip:hover .tooltip {
     opacity: 1;
 }
 .thumbstrip {
@@ -180,58 +279,34 @@ select {
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    border: 1px solid #111;
-    background: #333;
-    border-radius: 8px;
-}
-.thumbstrip::-webkit-scrollbar {
-    border-bottom-right-radius: 8px;
-    border-bottom-left-radius: 8px;
+    background: hsl(228, 5%, 20%);
+    box-shadow: 0 0 0 0.5rem hsl(228deg 5% 20%);
+    border-radius: .25rem;
 }
 .thumbstrip .thumbnail {
+    display: inline-block;
     border: 0;
     font-size: 0;
-    outline: 1px solid #111;
+    margin: 0 .5rem 0 0;
     padding: 0;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    
-    width: 160px;
-    height: 90px;
+    border-radius: .25rem;
+    width: 10rem;
+    height: 5.625rem;
+    transition: filter .2s;
+}
+.read {
+    filter: saturate(0)
 }
 .thumbstrip .thumbnail:hover {
-    filter: none;
+    box-shadow: 0 0 0 2px inset hsl(228, 5%, 50%), 0 0 3px 3px inset black;
 }
 .thumbstrip .thumbnail.selected {
-    box-shadow: 0 0 0 2px inset lightblue, 0 0 0 3px inset #111;
-    margin-right: 1px;
-    filter: none;
+    box-shadow: 0 0 0 2px inset lightblue, 0 0 3px 3px inset black;;
 }
-.thumbstrip .thumbnail:first-child {
-    border-top-left-radius: 8px;
-}
+
 .thumbstrip .thumbnail:last-child {
-    border-top-right-radius: 8px;
-}
-::-webkit-scrollbar {
-	background-color: rgb(53,54,58)!important;
-	width: 16px!important;
-	height: 16px!important;
-}
-::-webkit-scrollbar-thumb {
-	background-color: hsl(228, 5%, 42%)!important;
-	border: 4px solid hsl(228, 5%, 22%)!important;
-	border-radius: 100px!important;
-	min-height: 50px!important;
-}
-::-webkit-scrollbar-corner {
-	background-color: hsl(228, 5%, 22%)!important;
-}
-::-webkit-scrollbar-thumb:hover {
-	background-color: hsl(228, 5%, 52%)!important;
-}
-::-webkit-scrollbar-thumb:active {
-	background-color: hsl(228, 5%, 62%)!important;
-	border-width: 3px!important;
+    margin: 0;
 }

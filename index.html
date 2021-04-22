@@ -10,15 +10,24 @@
 </head>
 
 <body>
-    <h1>r/youtubehaiku browser</h1>
-    <select class='time' title="Posts from...">
-        <option value="day">Past 24 hours</option>
-        <option selected value="week">Past week</option>
-        <option value="month">Past month</option>
-        <option value="year">Past year</option>
-    </select>
-    <!-- <input type='checkbox' id='hide-read' />
-    <label for='hide-read'>Hide read</label> -->
+    <header>
+        <div>
+            <span>r/youtubehaiku browser</span>
+            <select class='sort' title="Sort by...">
+                <option selected value="hot">Hot</option>
+                <option value="top">Top</option>
+                <option value="new">New</option>
+                <option value="rising">Rising</option>
+            </select>
+            <select class='time hidden' title="Posts from...">
+                <option selected value="day">Today</option>
+                <option value="week">This week</option>
+                <option value="month">This month</option>
+                <option value="year">This year</option>
+            </select>
+            <button class='hide-read'><img src='eye.svg'><img src='hide.svg'>Hide read</button>
+        </div>
+    </header>
     <div class='viewer' data-index=0>
         <div class='post current'>
             <div></div>
@@ -31,8 +40,10 @@
         </div>
     </div>
     <div class='thumbs'>
-        <div class='tooltip'>Post title</div>
-        <div class='thumbstrip'></div>
+
+        <div class='thumbstrip'>
+            <div class='tooltip'>Post title</div>
+        </div>
     </div>
 </body>
 

@@ -1,44 +1,92 @@
 let timeSelect = document.querySelector('.time')
+let memTime = window.localStorage.getItem('time')
+if (memTime) timeSelect.value = memTime
 timeSelect.addEventListener('change', () => {
+    window.localStorage.setItem('time',timeSelect.value)
     resetViewer()
 })
 let time = timeSelect.value
 
-// let hideRead = document.querySelector('#hide-read')
-// hideRead.addEventListener('change', () => {
-//     if (hideRead.checked) {
-//         document.body.classList.add('hide-read')
-//     } else {
-//         document.body.classList.remove('hide-read')
-//     }
-// })
+let sortSelect = document.querySelector('.sort')
+let memSort = window.localStorage.getItem('sort')
+if (memSort) sortSelect.value = memSort
+sortSelect.addEventListener('change', () => {
+    window.localStorage.setItem('sort',sortSelect.value)
+    resetViewer()
+})
+let sort = sortSelect.value
 
-let url = `https://www.reddit.com/r/youtubehaiku/top.json?t=${time}`
+let hideReadBtn = document.querySelector('.hide-read')
+hideReadBtn.addEventListener('click', () => {hideRead()})
+
+let url
+if (sort === 'top') {
+    timeSelect.classList.remove('hidden')
+    let time = timeSelect.value
+    url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?t=${time}`
+} else {
+    timeSelect.classList.add('hidden')
+    url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?limit=1000`
+}
+
 let origin = new URL(url).origin
-var list
+let list = []
 getJSON(url).then((json) => {
     list = json.data.children.map((each) => each.data)
+    for (const index in list) {
+        if (!(list[index].media)) {
+            list.splice(index,1)
+        }
+    }
+    for (const index in list) {
+        if (!(list[index].media)) {
+            list.splice(index,1)
+        }
+    }
     getThumbnails()
     updateViewer()
     updateThumbnails()
 }, list)
 
 function resetViewer() {
+    let sortSelect = document.querySelector('.sort')
     let timeSelect = document.querySelector('.time')
-    let time = timeSelect.value
-
-    let url = `https://www.reddit.com/r/youtubehaiku/top.json?t=${time}`
+    let sort = sortSelect.value
+    let url
+    if (sort === 'top') {
+        timeSelect.classList.remove('hidden')
+        let time = timeSelect.value
+        url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?t=${time}`
+    } else {
+        timeSelect.classList.add('hidden')
+        url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?limit=1000`
+    }
     getJSON(url).then((json) => {
         list = json.data.children.map((each) => each.data)
-
-        getThumbnails()
-        let viewer = document.querySelector('.viewer')
-        viewer.dataset.index = 0
-        document.querySelector('.post.current > div').innerHTML = ''
-        document.querySelector('.post.next > div').innerHTML = ''
-        document.querySelector('.post.prev > div').innerHTML = ''
-        updateViewer()
-        updateThumbnails()
+        for (const index in list) {
+            if (!(list[index].media)) {
+                list.splice(index,1)
+            }
+        }
+        for (const index in list) {
+            if (!(list[index].media)) {
+                list.splice(index,1)
+            }
+        }
+        if (list.length > 1) {
+            getThumbnails()
+            updateThumbnails()
+            let viewer = document.querySelector('.viewer')
+            viewer.dataset.index = 0
+            document.querySelector('.post.current > div').innerHTML = ''
+            document.querySelector('.post.next > div').innerHTML = ''
+            document.querySelector('.post.prev > div').innerHTML = ''
+            updateViewer()
+        } else {
+            document.querySelector('.post.current > div').innerHTML = 'Error fetching posts.'
+            document.querySelector('.post.next > div').innerHTML = ''
+            document.querySelector('.post.prev > div').innerHTML = ''
+        }
     }, list)
 }
 function updateViewer() {
@@ -52,19 +100,27 @@ function updateViewer() {
     let newPrev = document.createElement('div')
     let newCrnt = getPost(index)
     let newNext = document.createElement('div')
-
-    if (index === 0) {
-        newNext = getPost(index + 1)
-    } else if (index === list.length - 1) {
-        newPrev = getPost(index - 1)
+    if (list.length > 0) {
+        if (list.length > 1) {
+            if (index === 0) {
+                newNext = getPost(index + 1)
+            } else if (index === list.length - 1) {
+                newPrev = getPost(index - 1)
+            } else if (list.length > 1) {
+                newNext = getPost(index + 1)
+                newPrev = getPost(index - 1)
+            }
+        }
+        crnt.replaceWith(newCrnt)
+        prev.replaceWith(newPrev)
+        next.replaceWith(newNext)
     } else {
-        newNext = getPost(index + 1)
-        newPrev = getPost(index - 1)
+        document.querySelector('.post.current').innerHTML = '<div></div>'
+        document.querySelector('.post.next').innerHTML = '<div></div>'
+        document.querySelector('.post.prev').innerHTML = '<div></div>'
+        document.querySelector('.thumbstrip').innerHTML = '<div class="tooltip"></div>'
+        window.alert('Error fetching posts')
     }
-
-    crnt.replaceWith(newCrnt)
-    prev.replaceWith(newPrev)
-    next.replaceWith(newNext)
 }
 
 function getPost(index) {
@@ -78,7 +134,12 @@ function getPost(index) {
 
     let link = document.createElement('a')
     link.href = origin + src.permalink
+    link.target = '_blank'
     link.innerText = src.title
+
+    let icon = document.createElement('img')
+    icon.src = 'launch.svg'
+    link.appendChild(icon)
 
     title.appendChild(link)
 
@@ -100,11 +161,15 @@ function getPost(index) {
             if (input.checked) {
                 readList.push(src.id)
             } else {
-                readList.pop(src.id)
+                let search = readList.find((id) => id === src.id)
+                if (search) {
+                    let index = readList.indexOf(search)
+                    readList.splice(index,1)
+                }
             }
             window.localStorage.setItem('readList', JSON.stringify(readList))
         } else {
-            readList = [src.id]
+            if (input.checked) readList = [src.id]
             window.localStorage.setItem('readList', JSON.stringify(readList))
         }
         updateThumbnails()
@@ -120,6 +185,7 @@ function getPost(index) {
 
     let thumbnail = document.createElement('div')
     thumbnail.classList.add('thumbnail')
+    
     thumbnail.style.backgroundImage = `url(${src.media.oembed.thumbnail_url})`
 
     let embed = htmlDecode(src.media_embed.content)
@@ -157,7 +223,9 @@ async function getJSON(url) {
 }
 function getThumbnails() {
     let thumbstrip = document.querySelector('.thumbstrip')
-    thumbstrip.innerHTML = ''
+    let oldNails = thumbstrip.querySelectorAll('.thumbnail')
+    oldNails.forEach((el) => el.remove())
+    let tooltip = document.querySelector('.tooltip')
     for (const index in list) {
         let thumbnail = document.createElement('button')
         thumbnail.classList.add('thumbnail')
@@ -174,15 +242,15 @@ function getThumbnails() {
             tooltip.innerText = list[index].title
         })
         thumbnail.addEventListener('mousemove', (e) => {
-            let tooltip = document.querySelector('.tooltip')
             let offset = e.x - thumbstrip.getBoundingClientRect().x - tooltip.getBoundingClientRect().width / 2
-            let max = thumbstrip.getBoundingClientRect().width - tooltip.getBoundingClientRect().width
-            if (offset > 0 && offset < max) {
+            let boxShadowSize = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size')) / 2
+            let max = thumbstrip.getBoundingClientRect().width - tooltip.getBoundingClientRect().width + boxShadowSize
+            if (offset > boxShadowSize && offset < max) {
                 tooltip.style.left = offset + 'px'
-            } else if (offset <= 0) {
-                tooltip.style.left = 0 + 'px'
+            } else if (offset <= boxShadowSize) {
+                tooltip.style.left = boxShadowSize + 'px'
             } else if (offset > max) {
-                tooltip.style.left = max + 'px'
+                tooltip.style.left = max + 2 * boxShadowSize + 'px'
             }
         })
         thumbstrip.appendChild(thumbnail)
@@ -300,4 +368,26 @@ function updateThumbnails() {
 
     let selected = thumbstrip.querySelectorAll('button')[index]
     selected.classList.add('selected')
+}
+function hideRead() {
+    let readList = window.localStorage.getItem('readList')
+    let renderedPosts = Array.from(document.querySelectorAll('.post [data-id]'))
+    if (readList) {
+        readList = JSON.parse(readList)
+        for (const id of readList) {
+            let search = list.find((post) => post.id === id)
+            if (search) {
+                let index = list.indexOf(search)
+                list.splice(index,1)
+                document.querySelectorAll('.thumbstrip button')[index].remove()
+            }
+            let renderedSearch = renderedPosts.find((post) => post.dataset.id === id)
+            if (renderedSearch) {
+                let empty = document.createElement('div')
+                renderedSearch.replaceWith(empty)
+            }
+        }
+        getThumbnails()
+        updateViewer()
+    }
 }
