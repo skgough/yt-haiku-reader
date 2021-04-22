@@ -19,6 +19,13 @@ let sort = sortSelect.value
 let hideReadBtn = document.querySelector('.hide-read')
 hideReadBtn.addEventListener('click', () => { hideRead() })
 
+let refreshBtn = document.querySelector('.refresh')
+refreshBtn.addEventListener('click', () => { 
+    refreshBtn.classList.remove('spinny'); // reset animation
+    void refreshBtn.offsetWidth; // trigger reflow
+    refreshBtn.classList.add('spinny');
+    resetViewer() 
+})
 let url
 if (sort === 'top') {
     timeSelect.classList.remove('hidden')
@@ -45,7 +52,6 @@ getJSON(url).then((json) => {
     }
     getThumbnails()
     updateViewer()
-    updateThumbnails()
 }, list)
 
 function resetViewer() {
@@ -77,7 +83,7 @@ function resetViewer() {
             let viewer = document.querySelector('.viewer')
             viewer.dataset.index = 0
             getThumbnails()
-            updateThumbnails()
+            document.querySelector('.thumbstrip').classList.remove('placeholder')
             document.querySelector('.post.current > div').innerHTML = ''
             document.querySelector('.post.next > div').innerHTML = ''
             document.querySelector('.post.prev > div').innerHTML = ''
@@ -97,10 +103,10 @@ function updateViewer() {
     let next = document.querySelector('.post.next > div')
     let prev = document.querySelector('.post.prev > div')
 
-    let newPrev = document.createElement('div')
-    let newCrnt = getPost(index)
-    let newNext = document.createElement('div')
     if (list.length > 0) {
+        let newPrev = document.createElement('div')
+        let newCrnt = getPost(index)
+        let newNext = document.createElement('div')
         if (list.length > 1) {
             if (index === 0) {
                 newNext = getPost(index + 1)
@@ -114,12 +120,13 @@ function updateViewer() {
         crnt.replaceWith(newCrnt)
         prev.replaceWith(newPrev)
         next.replaceWith(newNext)
+        updateThumbnails()
     } else {
-        document.querySelector('.post.current').innerHTML = '<div></div>'
+        document.querySelector('.post.current > div').replaceWith(getRickRoll())
         document.querySelector('.post.next').innerHTML = '<div></div>'
         document.querySelector('.post.prev').innerHTML = '<div></div>'
+        document.querySelector('.thumbstrip').classList.add('placeholder')
         document.querySelector('.thumbstrip').innerHTML = '<div class="tooltip"></div>'
-        window.alert('Error fetching posts')
     }
 }
 
@@ -133,6 +140,7 @@ function getPost(index) {
     title.classList.add('link')
 
     let link = document.createElement('a')
+    link.setAttribute('tabindex','-1')
     link.href = origin + src.permalink
     link.target = '_blank'
     link.innerText = src.title
@@ -226,6 +234,7 @@ function getPost(index) {
     let nextBtn = document.createElement('button')
     nextBtn.classList.add('next-button')
     nextBtn.innerText = 'Next post'
+    nextBtn.tabindex = 1
     nextBtn.addEventListener('click', () => {
         nextPost()
     })
@@ -275,11 +284,11 @@ function getThumbnails() {
             let offset = e.x - thumbstrip.getBoundingClientRect().x - tooltip.getBoundingClientRect().width / 2
             let boxShadowSize = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size')) / 2
             let max = thumbstrip.getBoundingClientRect().width - tooltip.getBoundingClientRect().width + boxShadowSize
-            if (offset > boxShadowSize && offset < max + boxShadowSize) {
+            if (offset > boxShadowSize && offset < max) {
                 tooltip.style.left = offset + 'px'
             } else if (offset <= boxShadowSize) {
                 tooltip.style.left = boxShadowSize + 'px'
-            } else if (offset > max + boxShadowSize) {
+            } else if (offset > max) {
                 tooltip.style.left = max + 2 * boxShadowSize + 'px'
             }
         })
@@ -298,7 +307,6 @@ function htmlDecode(input) {
 function prevPost() {
     let viewer = document.querySelector('.viewer')
     let index = parseInt(viewer.dataset.index) - 1
-    let src = list[index]
 
     let crnt = document.querySelector('.post.current > div')
     let next = document.querySelector('.post.next > div')
@@ -312,6 +320,7 @@ function prevPost() {
 
     prev.parentElement.classList.remove('prev')
     prev.parentElement.classList.add('current')
+    prev.querySelector('.link a').setAttribute('tabindex','')
 
     if (!(index === list.length - 1)) {
         let nextPost = getPost(index + 1)
@@ -346,6 +355,7 @@ function nextPost() {
 
     next.parentElement.classList.remove('next')
     next.parentElement.classList.add('current')
+    next.querySelector('.link a').setAttribute('tabindex','')
 
     prev.parentElement.classList.remove('prev')
     prev.parentElement.classList.add('next')
@@ -403,7 +413,6 @@ function hideRead() {
     let readList = window.localStorage.getItem('readList')
     if (readList) {
         let renderedPosts = Array.from(document.querySelectorAll('.post [data-id]'))
-        let currentID = document.querySelector('.post.current').dataset.id
         readList = JSON.parse(readList)
         for (const id of readList) {
             let search = list.find((post) => post.id === id)
@@ -412,15 +421,33 @@ function hideRead() {
                 list.splice(index, 1)
                 document.querySelectorAll('.thumbstrip button')[index].remove()
             }
-
-            let renderedSearch = renderedPosts.find((post) => post.dataset.id === id)
-            if (renderedSearch) {
-                let empty = document.createElement('div')
-                renderedSearch.replaceWith(empty)
-            }
         }
         document.querySelector('.viewer').dataset.index = 0
         getThumbnails()
         updateViewer()
     }
+}
+function getRickRoll() {
+    let post = document.createElement('div')
+
+    let title = document.createElement('div')
+    title.classList.add('link')
+    title.innerText = 'You spend too much time on reddit.'
+
+    let thumbnail = document.createElement('div')
+    thumbnail.classList.add('thumbnail')
+
+    thumbnail.style.backgroundImage = `url(https://i3.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)`
+
+    let embed = htmlDecode('<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0" allowfullscreen></iframe>')
+    console.log(embed)
+    embed.addEventListener('load', () => {
+        post.classList.add('loaded')
+    })
+
+    post.appendChild(title)
+    post.appendChild(thumbnail)
+    post.appendChild(embed)
+
+    return post
 }

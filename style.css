@@ -26,7 +26,7 @@ header > div {
 header > div > * {
     margin: 0 .5ch;
 }
-select, .hide-read {
+select, header > div button {
     height: 1.75rem;
     background: hsl(228, 5%, 25%);
     color: white;
@@ -35,16 +35,16 @@ select, .hide-read {
     font: 600 .8rem/1.75rem 'IBM Plex Sans';
     padding: 0 .5rem;
 }
-select:hover, .hide-read:hover {
+select:hover, header > div button:hover {
     color: hsl(212, 100%, 75%);
 }
 select:hover option {
     color: white;
 }
-.hide-read {
+header > div button {
     display: flex;
 }
-.hide-read img {
+header > div button img {
     display: inline-block;
     height: 1.25rem;
     margin: .25rem .25rem .25rem 0
@@ -61,7 +61,16 @@ select:hover option {
 .hide-read:hover img[src*=hide] {
     display: inline-block;
 }
-
+.refresh {
+    margin-left: auto;
+}
+.refresh.spinny img {
+    animation: refresh cubic-bezier(0.18, 0.89, 0.32, 1.28) .5s 1;
+}
+@keyframes refresh {
+    from {transform: rotate(0)}
+    to {transform: rotate(360deg)}
+}
 .viewer,.thumbs {
     max-width: 100rem;
     margin: 0 auto;
@@ -200,11 +209,8 @@ select:hover option {
     display: none;
 }
 
-
-
-
-
 .post iframe {
+    border: 0;
     border-radius: .25rem;
     box-sizing: border-box;
     width: 100%;
@@ -236,6 +242,7 @@ select:hover option {
 .post.next iframe,
 .post.prev iframe {
     height: 8.7890625rem;
+    visibility: hidden;
 }
 @supports(aspect-ratio: 16 / 9) {
     .post.next iframe,
@@ -279,7 +286,9 @@ select:hover option {
     transition: .2s opacity;
 }
 .next-button:hover,
-.prev-button:hover {
+.prev-button:hover,
+.post.next:focus-within .next-button,
+.post.prev:focus-within .prev-button {
     opacity: 1;
 }
 
@@ -329,7 +338,8 @@ select:hover option {
     box-shadow: 0 0 0 0.5rem hsl(228deg 5% 20%);
     border-radius: .25rem;
 }
-.thumbstrip .thumbnail {
+.thumbstrip .thumbnail,
+.thumbstrip .placeholder {
     display: inline-block;
     border: 0;
     font-size: 0;
@@ -342,6 +352,12 @@ select:hover option {
     width: 10rem;
     height: 5.625rem;
     transition: filter .2s;
+}
+.placeholder {
+    height: 5.625rem;
+}
+.thumbstrip.placeholder:hover .tooltip {
+    opacity: 0;
 }
 .thumbnail.read {
     filter: saturate(0)
