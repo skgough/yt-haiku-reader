@@ -106,6 +106,7 @@ function updateViewer() {
     if (list.length > 0) {
         let newPrev = document.createElement('div')
         let newCrnt = getPost(index)
+        newCrnt.querySelector('.link a').setAttribute('tabindex','')
         let newNext = document.createElement('div')
         if (list.length > 1) {
             if (index === 0) {
@@ -133,8 +134,6 @@ function updateViewer() {
 function getPost(index) {
     let post = document.createElement('div')
     let src = list[index]
-
-    post.dataset.id = src.id
 
     let title = document.createElement('div')
     title.classList.add('link')
@@ -213,7 +212,6 @@ function getPost(index) {
         updateThumbnails()
     })
 
-
     readMarker.appendChild(input)
     readMarker.appendChild(button)
 
@@ -251,6 +249,7 @@ function getPost(index) {
     post.appendChild(embed)
     post.appendChild(nextBtn)
     post.appendChild(prevBtn)
+    post.classList.add('populated')
 
     return post
 }
@@ -344,7 +343,6 @@ function prevPost() {
 function nextPost() {
     let viewer = document.querySelector('.viewer')
     let index = parseInt(viewer.dataset.index) + 1
-    let src = list[index]
 
     let crnt = document.querySelector('.post.current > div')
     let next = document.querySelector('.post.next > div')

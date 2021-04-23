@@ -34,11 +34,15 @@ select, header > div button {
     border-radius: .25rem;
     font: 600 .8rem/1.75rem 'IBM Plex Sans';
     padding: 0 .5rem;
+    user-select: none;
 }
-select:hover, header > div button:hover {
+select:hover,
+header > div button:hover,
+select:focus,
+header > div button:focus-visible {
     color: hsl(212, 100%, 75%);
 }
-select:hover option {
+select option {
     color: white;
 }
 header > div button {
@@ -52,13 +56,15 @@ header > div button img {
 .hide-read img[src*=eye] {
     display: inline-block;
 }
-.hide-read:hover img[src*=eye] {
+.hide-read:hover img[src*=eye],
+.hide-read:focus-visible img[src*=eye] {
     display: none;
 }
 .hide-read img[src*=hide] {
     display: none;
 }
-.hide-read:hover img[src*=hide] {
+.hide-read:hover img[src*=hide],
+.hide-read:focus-visible img[src*=hide] {
     display: inline-block;
 }
 .refresh {
@@ -105,8 +111,8 @@ header > div button img {
     font-size: 0;
     position: relative;
 }
-.post.next [data-id],
-.post.prev [data-id] {
+.post.next .populated,
+.post.prev .populated {
     padding: 0 .75rem .75rem .75rem;
     background: hsl(228, 5%, 20%);
     border-radius: .5rem;
@@ -137,7 +143,8 @@ header > div button img {
 .post .link a:hover {
     text-decoration: underline;
 }
-.post .link a:hover img {
+.post .link a:hover img,
+.post .link a:focus-visible img {
     display: inline-block;
 }
 .post .link a:visited {
@@ -155,7 +162,8 @@ header > div button img {
     text-align: right;
     user-select: none;
 }
-.post .read-marker button:hover {
+.post .read-marker button:hover,
+.post .read-marker button:focus-visible {
     color: hsl(212, 100%, 75%)
 }
 .post .read-marker input {
@@ -179,23 +187,27 @@ header > div button img {
 .post .read-marker [src*=eye] {
     display: block;
 }
-.post .read-marker:hover [src*=eye] {
+.post .read-marker:hover [src*=eye],
+.post .read-marker:focus-within [src*=eye] {
     display: none;
 }
 .post .read-marker.read [src*=eye] {
     display: none;
 }
-.post .read-marker.read:hover [src*=eye] {
+.post .read-marker.read:hover [src*=eye],
+.post .read-marker.read:focus-within [src*=eye] {
     display: block;
 }
 
 .post .read-marker [src*=hide] {
     display: none;
 }
-.post .read-marker:hover [src*=hide] {
+.post .read-marker:hover [src*=hide],
+.post .read-marker:focus-within [src*=hide] {
     display: block;
 }
-.post .read-marker.read:hover [src*=hide] {
+.post .read-marker.read:hover [src*=hide],
+.post .read-marker.read:focus-within [src*=hide] {
     display: none;
 }
 
@@ -205,7 +217,8 @@ header > div button img {
 .post .read-marker.read [src*=read] {
     display: block;
 }
-.post .read-marker.read:hover [src*=read] {
+.post .read-marker.read:hover [src*=read],
+.post .read-marker.read:focus-within [src*=read] {
     display: none;
 }
 
@@ -236,7 +249,9 @@ header > div button img {
     transition: .2s filter;
 }
 .post.next:hover .thumbnail,
-.post.prev:hover .thumbnail {
+.post.next:focus-within .thumbnail,
+.post.prev:hover .thumbnail,
+.post.prev:focus-within .thumbnail {
     filter: none;
 }
 .post.next iframe,
@@ -362,8 +377,10 @@ header > div button img {
 .thumbnail.read {
     filter: saturate(0)
 }
-.thumbstrip .thumbnail:hover {
-    box-shadow: 0 0 0 .25rem inset hsl(212, 5%, 50%)
+.thumbstrip .thumbnail:hover,
+.thumbstrip .thumbnail:focus-visible {
+    box-shadow: 0 0 0 .25rem inset hsl(212, 5%, 50%);
+    outline: none;
 }
 .thumbstrip .thumbnail.selected {
     box-shadow: 0 0 0 .25rem inset hsl(212, 100%, 75%)
