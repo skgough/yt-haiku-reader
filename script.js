@@ -36,6 +36,13 @@ if (sort === 'top') {
     url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?limit=1000`
 }
 
+let thumbstrip = document.querySelector('.thumbstrip')
+let tooltip = document.querySelector('.tooltip')
+thumbstrip.addEventListener('mouseleave', () => {
+    let boxShadowSize = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size')) / 2
+    tooltip.style.left = boxShadowSize + 'px'
+})
+
 let origin = new URL(url).origin
 let list = []
 getJSON(url).then((json) => {
@@ -410,7 +417,6 @@ function updateThumbnails() {
 function hideRead() {
     let readList = window.localStorage.getItem('readList')
     if (readList) {
-        let renderedPosts = Array.from(document.querySelectorAll('.post [data-id]'))
         readList = JSON.parse(readList)
         for (const id of readList) {
             let search = list.find((post) => post.id === id)
@@ -421,6 +427,7 @@ function hideRead() {
             }
         }
         document.querySelector('.viewer').dataset.index = 0
+        document.querySelector('.tooltip').innerText = list[0].title
         getThumbnails()
         updateViewer()
     }

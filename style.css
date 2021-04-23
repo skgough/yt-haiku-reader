@@ -143,8 +143,8 @@ header > div button img {
 .post .link a:hover {
     text-decoration: underline;
 }
-.post .link a:hover img,
-.post .link a:focus-visible img {
+.post .link a[target="_blank"]:hover img,
+.post .link a[target="_blank"]:focus-visible img {
     display: inline-block;
 }
 .post .link a:visited {
