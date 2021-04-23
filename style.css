@@ -38,7 +38,7 @@ select, header > div button {
 }
 select:hover,
 header > div button:hover,
-select:focus,
+select:focus-visible,
 header > div button:focus-visible {
     color: hsl(212, 100%, 75%);
 }
@@ -188,14 +188,14 @@ header > div button img {
     display: block;
 }
 .post .read-marker:hover [src*=eye],
-.post .read-marker:focus-within [src*=eye] {
+.post .read-marker button:focus-visible [src*=eye] {
     display: none;
 }
 .post .read-marker.read [src*=eye] {
     display: none;
 }
 .post .read-marker.read:hover [src*=eye],
-.post .read-marker.read:focus-within [src*=eye] {
+.post .read-marker.read button:focus-visible [src*=eye] {
     display: block;
 }
 
@@ -203,11 +203,11 @@ header > div button img {
     display: none;
 }
 .post .read-marker:hover [src*=hide],
-.post .read-marker:focus-within [src*=hide] {
+.post .read-marker button:focus-visible [src*=hide] {
     display: block;
 }
 .post .read-marker.read:hover [src*=hide],
-.post .read-marker.read:focus-within [src*=hide] {
+.post .read-marker.read button:focus-visible [src*=hide] {
     display: none;
 }
 
@@ -218,7 +218,7 @@ header > div button img {
     display: block;
 }
 .post .read-marker.read:hover [src*=read],
-.post .read-marker.read:focus-within [src*=read] {
+.post .read-marker.read button:focus-visible [src*=read] {
     display: none;
 }
 
