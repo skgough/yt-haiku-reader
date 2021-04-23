@@ -86,7 +86,7 @@ function resetViewer() {
                 list.splice(index, 1)
             }
         }
-        if (list.length > 1) {
+        if (list.length > 0) {
             let viewer = document.querySelector('.viewer')
             viewer.dataset.index = 0
             getThumbnails()
@@ -111,6 +111,7 @@ function updateViewer() {
     let prev = document.querySelector('.post.prev > div')
 
     if (list.length > 0) {
+        document.querySelector('.thumbstrip').classList.remove('placeholder')
         let newPrev = document.createElement('div')
         let newCrnt = getPost(index)
         newCrnt.querySelector('.link a').setAttribute('tabindex','')
@@ -427,7 +428,7 @@ function hideRead() {
             }
         }
         document.querySelector('.viewer').dataset.index = 0
-        document.querySelector('.tooltip').innerText = list[0].title
+        if (list[0]) document.querySelector('.tooltip').innerText = list[0].title
         getThumbnails()
         updateViewer()
     }
@@ -445,7 +446,6 @@ function getRickRoll() {
     thumbnail.style.backgroundImage = `url(https://i3.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)`
 
     let embed = htmlDecode('<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0" allowfullscreen></iframe>')
-    console.log(embed)
     embed.addEventListener('load', () => {
         post.classList.add('loaded')
     })

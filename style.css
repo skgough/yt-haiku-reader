@@ -156,6 +156,9 @@ header > div button img {
     text-decoration: none;
     max-width: 100%;
 }
+.placeholder .link {
+    height: 1.75rem;
+}
 .post .read-marker {
     white-space: nowrap;
     font-size: .8rem;
@@ -368,7 +371,7 @@ header > div button img {
     height: 5.625rem;
     transition: filter .2s;
 }
-.placeholder {
+.thumbstrip.placeholder {
     height: 5.625rem;
 }
 .thumbstrip.placeholder:hover .tooltip {
