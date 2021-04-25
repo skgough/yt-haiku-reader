@@ -1,13 +1,17 @@
+let storageEnabled = testStorage()
+
 let timeSelect = document.querySelector('.time')
 let fauxTimeSpan = document.querySelector('.time~.faux span')
-let memTime = window.localStorage.getItem('time')
-if (memTime) {
-    timeSelect.value = memTime
-    fauxTimeSpan.innerText = timeSelect.querySelector(`[value=${timeSelect.value}]`).innerText
+if (storageEnabled) {
+    let memTime = localStorage.getItem('time')
+    if (memTime) {
+        timeSelect.value = memTime
+        fauxTimeSpan.innerText = timeSelect.querySelector(`[value=${timeSelect.value}]`).innerText
+    }
 }
 
 timeSelect.addEventListener('change', () => {
-    window.localStorage.setItem('time', timeSelect.value)
+    if (storageEnabled) localStorage.setItem('time', timeSelect.value)
     fauxTimeSpan.innerText = timeSelect.querySelector(`[value=${timeSelect.value}]`).innerText
     resetViewer()
 })
@@ -15,13 +19,15 @@ let time = timeSelect.value
 
 let sortSelect = document.querySelector('.sort')
 let fauxSortSpan = document.querySelector('.sort~.faux span')
-let memSort = window.localStorage.getItem('sort')
-if (memSort) {
-    sortSelect.value = memSort
-    fauxSortSpan.innerText = sortSelect.querySelector(`[value=${sortSelect.value}]`).innerText
+if (storageEnabled) {
+    let memSort = localStorage.getItem('sort')
+    if (memSort) {
+        sortSelect.value = memSort
+        fauxSortSpan.innerText = sortSelect.querySelector(`[value=${sortSelect.value}]`).innerText
+    }
 }
 sortSelect.addEventListener('change', () => {
-    window.localStorage.setItem('sort', sortSelect.value)
+    if (storageEnabled) localStorage.setItem('sort', sortSelect.value)
     fauxSortSpan.innerText = sortSelect.querySelector(`[value=${sortSelect.value}]`).innerText
     resetViewer()
 })
@@ -173,13 +179,15 @@ function getPost(index) {
     readMarker.classList.add('read-marker')
     let input = document.createElement('input')
     input.type = "checkbox"
-    let readList = window.localStorage.getItem('readList')
-    if (readList) {
-        readList = JSON.parse(readList)
-        let search = readList.find((id) => id === src.id)
-        if (search) {
-            input.checked = true
-            readMarker.classList.add('read')
+    if (storageEnabled) {
+        let readList = localStorage.getItem('readList')
+        if (readList) {
+            readList = JSON.parse(readList)
+            let search = readList.find((id) => id === src.id)
+            if (search) {
+                input.checked = true
+                readMarker.classList.add('read')
+            }
         }
     }
 
@@ -211,22 +219,24 @@ function getPost(index) {
     })
 
     input.addEventListener('change', () => {
-        let readList = window.localStorage.getItem('readList')
-        if (readList) {
-            readList = JSON.parse(readList)
-            if (input.checked) {
-                readList.push(src.id)
-            } else {
-                let search = readList.find((id) => id === src.id)
-                if (search) {
-                    let index = readList.indexOf(search)
-                    readList.splice(index, 1)
+        if (storageEnabled) {
+            let readList = localStorage.getItem('readList')
+            if (readList) {
+                readList = JSON.parse(readList)
+                if (input.checked) {
+                    readList.push(src.id)
+                } else {
+                    let search = readList.find((id) => id === src.id)
+                    if (search) {
+                        let index = readList.indexOf(search)
+                        readList.splice(index, 1)
+                    }
                 }
+                localStorage.setItem('readList', JSON.stringify(readList))
+            } else {
+                if (input.checked) readList = [src.id]
+                localStorage.setItem('readList', JSON.stringify(readList))
             }
-            window.localStorage.setItem('readList', JSON.stringify(readList))
-        } else {
-            if (input.checked) readList = [src.id]
-            window.localStorage.setItem('readList', JSON.stringify(readList))
         }
         updateThumbnails()
     })
@@ -404,14 +414,16 @@ function updateThumbnails() {
     let buttons = thumbstrip.querySelectorAll('button')
     for (let i = 0; i < buttons.length; i++) {
         let id = list[i].id
-        let readList = window.localStorage.getItem('readList')
-        if (readList) {
-            readList = JSON.parse(readList)
-            let search = readList.find((postID) => postID === id)
-            if (search) {
-                buttons[i].classList.add('read')
-            } else {
-                buttons[i].classList.remove('read')
+        if (storageEnabled) {
+            let readList = localStorage.getItem('readList')
+            if (readList) {
+                readList = JSON.parse(readList)
+                let search = readList.find((postID) => postID === id)
+                if (search) {
+                    buttons[i].classList.add('read')
+                } else {
+                    buttons[i].classList.remove('read')
+                }
             }
         }
     }
@@ -427,21 +439,23 @@ function updateThumbnails() {
     selected.classList.add('selected')
 }
 function hideRead() {
-    let readList = window.localStorage.getItem('readList')
-    if (readList) {
-        readList = JSON.parse(readList)
-        for (const id of readList) {
-            let search = list.find((post) => post.id === id)
-            if (search) {
-                let index = list.indexOf(search)
-                list.splice(index, 1)
-                document.querySelectorAll('.thumbstrip button')[index].remove()
+    if (storageEnabled) {
+        let readList = localStorage.getItem('readList')
+        if (readList) {
+            readList = JSON.parse(readList)
+            for (const id of readList) {
+                let search = list.find((post) => post.id === id)
+                if (search) {
+                    let index = list.indexOf(search)
+                    list.splice(index, 1)
+                    document.querySelectorAll('.thumbstrip button')[index].remove()
+                }
             }
+            document.querySelector('.viewer').dataset.index = 0
+            if (list[0]) document.querySelector('.tooltip').innerText = list[0].title
+            getThumbnails()
+            updateViewer()
         }
-        document.querySelector('.viewer').dataset.index = 0
-        if (list[0]) document.querySelector('.tooltip').innerText = list[0].title
-        getThumbnails()
-        updateViewer()
     }
 }
 function getRickRoll() {
@@ -468,4 +482,15 @@ function getRickRoll() {
     post.appendChild(embed)
 
     return post
+}
+
+function testStorage() {
+    let test = 'test';
+    try {
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch(e) {
+        return false;
+    }
 }

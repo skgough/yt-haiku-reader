@@ -339,6 +339,10 @@ header > div button img {
     .prev-button {
         opacity: 1;
     }
+    .post.next .thumbnail,
+    .post.prev .thumbnail {
+        filter: none;
+    }
 }
 
 .next-button {
