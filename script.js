@@ -1,4 +1,4 @@
-let storageEnabled = testStorage()
+const storageEnabled = testStorage()
 
 let timeSelect = document.querySelector('.time')
 let fauxTimeSpan = document.querySelector('.time~.faux span')
@@ -69,11 +69,6 @@ getJSON(url).then((json) => {
             list.splice(index, 1)
         }
     }
-    // for (const index in list) {
-    //     if (!(list[index].media)) {
-    //         list.splice(index, 1)
-    //     }
-    // }
     getThumbnails()
     updateViewer()
 }, list)
@@ -98,11 +93,6 @@ function resetViewer() {
                 list.splice(index, 1)
             }
         }
-        // for (const index in list) {
-        //     if (!(list[index].media)) {
-        //         list.splice(index, 1)
-        //     }
-        // }
         if (list.length > 0) {
             let viewer = document.querySelector('.viewer')
             viewer.dataset.index = 0
@@ -206,16 +196,20 @@ function getPost(index) {
     button.appendChild(text)
 
     button.addEventListener('click', () => {
-        input.checked = !input.checked
-        if (input.checked) {
-            text.innerText = 'Mark unwatched'
-            readMarker.classList.add('read')
+        if (storageEnabled) {
+            input.checked = !input.checked
+            if (input.checked) {
+                text.innerText = 'Mark unwatched'
+                readMarker.classList.add('read')
+            } else {
+                text.innerText = 'Mark watched'
+                readMarker.classList.remove('read')
+            }
+            let evt = new Event('change')
+            input.dispatchEvent(evt)
         } else {
-            text.innerText = 'Mark watched'
-            readMarker.classList.remove('read')
+            errorJiggle(button)
         }
-        let evt = new Event('change')
-        input.dispatchEvent(evt)
     })
 
     input.addEventListener('change', () => {
@@ -456,6 +450,9 @@ function hideRead() {
             getThumbnails()
             updateViewer()
         }
+    } else {
+        let hideReadBtn = document.querySelector('.hide-read')
+        errorJiggle(hideReadBtn)
     }
 }
 function getRickRoll() {
@@ -494,3 +491,17 @@ function testStorage() {
         return false;
     }
 }
+function errorJiggle(element) {
+    element.classList.remove('jiggly'); // reset animation
+    void element.offsetWidth; // trigger reflow
+    element.classList.add('jiggly');
+    let audio = new Audio('error.mp3');
+    audio.play();
+    setTimeout(() => {
+        if (!cookieMessageReceived) {
+            alert('Enable cookies to use this feature.')
+            cookieMessageReceived = true
+        }
+    }, 200)
+}
+let cookieMessageReceived = false

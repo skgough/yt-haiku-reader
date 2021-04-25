@@ -87,6 +87,17 @@ header > div button img {
 .hide-read:focus-visible img[src*=hide] {
     display: inline-block;
 }
+.jiggly {
+    animation: jiggle .1s 4;
+}
+@keyframes jiggle {
+    0% { transform: rotate(0deg) }
+    25% { transform: rotate(2deg) }
+    50% { transform: rotate(0deg) }
+    75% { transform: rotate(-2deg) }
+    100% { transform: rotate(0deg) }
+}
+
 .refresh {
     margin-left: auto;
 }
