@@ -13,26 +13,38 @@
     <header>
         <div>
             <span>r/youtubehaiku</span>
-            <select class='sort' title="Sort by...">
-                <option selected value="hot">Hot</option>
-                <option value="top">Top</option>
-                <option value="new">New</option>
-                <option value="rising">Rising</option>
-            </select>
-            <select class='time hidden' title="Posts from...">
-                <option selected value="day">Today</option>
-                <option value="week">This week</option>
-                <option value="month">This month</option>
-                <option value="year">This year</option>
-            </select>
-            <button class='hide-read'><img src='eye.svg'><img src='hide.svg'>Hide read</button>
+            <div class='select'>
+                <select class='sort' title="Sort by...">
+                    <option selected value="hot">Hot</option>
+                    <option value="top">Top</option>
+                    <option value="new">New</option>
+                    <option value="rising">Rising</option>
+                </select>
+                <div class='faux'>
+                    <span>Hot</span>
+                    <img src='expand.svg'>
+                </div>
+            </div>
+            <div class='select hidden'>
+                <select class='time' title="Posts from...">
+                    <option selected value="day">Today</option>
+                    <option value="week">This week</option>
+                    <option value="month">This month</option>
+                    <option value="year">This year</option>
+                </select>
+                <div class='faux'>
+                    <span>Today</span>
+                    <img src='expand.svg'>
+                </div>
+            </div>
+            <button class='hide-read'><img src='eye.svg'><img src='hide.svg'>Hide watched</button>
             <button class='refresh'><img src='refresh.svg'>Refresh</button>
         </div>
     </header>
     <div class='viewer' data-index=0>
         <div class='post current'>
             <div class='placeholder'>
-                <div class='link'></div>
+                <div class='title'></div>
                 <iframe></iframe>
             </div>
         </div>

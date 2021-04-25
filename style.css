@@ -1,7 +1,4 @@
 @import url(fonts.css);
-.hidden {
-    display: none;
-}
 body {
     margin: 0;
     padding: 0;
@@ -26,7 +23,27 @@ header > div {
 header > div > * {
     margin: 0 .5ch;
 }
-select, header > div button {
+.select {
+    position: relative;
+}
+.select .faux {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    padding-right: .25rem;
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    align-items: center;
+}
+.select .faux img {
+    margin-left: auto;
+}
+select, select~.faux, header > div button {
+    box-sizing: border-box;
     height: 1.75rem;
     background: hsl(228, 5%, 25%);
     color: white;
@@ -36,11 +53,14 @@ select, header > div button {
     padding: 0 .5rem;
     user-select: none;
 }
-select:hover,
+select:hover~.faux,
 header > div button:hover,
 select:focus-visible,
 header > div button:focus-visible {
     color: hsl(212, 100%, 75%);
+}
+.hidden {
+    display: none;
 }
 select option {
     color: white;
@@ -117,7 +137,7 @@ header > div button img {
     background: hsl(228, 5%, 20%);
     border-radius: .5rem;
 }
-.post .link {
+.post .title {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -125,7 +145,8 @@ header > div button img {
     font-size: .9rem;
     color: white;
 }
-.post .link a {
+.post .title a,
+.post .title > span {
     display: flex;
     align-items: flex-end;
     font-weight: 600;
@@ -135,28 +156,32 @@ header > div button img {
     color: white;
     text-decoration: none;
 }
-.post .link a img {
+.post .title > span {
+    height: 1.75rem;
+    line-height: 1.75rem;
+}
+.post .title a img {
     height: 1.25rem;
     margin-left: .25rem;
     display: none;
 }
-.post .link a:hover {
+.post .title a:hover {
     text-decoration: underline;
 }
-.post .link a[target="_blank"]:hover img,
-.post .link a[target="_blank"]:focus-visible img {
+.post .title a[target="_blank"]:hover img,
+.post .title a[target="_blank"]:focus-visible img {
     display: inline-block;
 }
-.post .link a:visited {
+.post .title a:visited {
     color: white;
 }
-.post.next .link a,
-.post.prev .link a {
+.post.next .title a,
+.post.prev .title a {
     color: white;
     text-decoration: none;
     max-width: 100%;
 }
-.placeholder .link {
+.placeholder .title {
     height: 1.75rem;
 }
 .post .read-marker {
@@ -308,6 +333,12 @@ header > div button img {
 .post.next:focus-within .next-button,
 .post.prev:focus-within .prev-button {
     opacity: 1;
+}
+@media (pointer: coarse) {
+    .next-button,
+    .prev-button {
+        opacity: 1;
+    }
 }
 
 .next-button {

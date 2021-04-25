@@ -1,17 +1,28 @@
 let timeSelect = document.querySelector('.time')
+let fauxTimeSpan = document.querySelector('.time~.faux span')
 let memTime = window.localStorage.getItem('time')
-if (memTime) timeSelect.value = memTime
+if (memTime) {
+    timeSelect.value = memTime
+    fauxTimeSpan.innerText = timeSelect.querySelector(`[value=${timeSelect.value}]`).innerText
+}
+
 timeSelect.addEventListener('change', () => {
     window.localStorage.setItem('time', timeSelect.value)
+    fauxTimeSpan.innerText = timeSelect.querySelector(`[value=${timeSelect.value}]`).innerText
     resetViewer()
 })
 let time = timeSelect.value
 
 let sortSelect = document.querySelector('.sort')
+let fauxSortSpan = document.querySelector('.sort~.faux span')
 let memSort = window.localStorage.getItem('sort')
-if (memSort) sortSelect.value = memSort
+if (memSort) {
+    sortSelect.value = memSort
+    fauxSortSpan.innerText = sortSelect.querySelector(`[value=${sortSelect.value}]`).innerText
+}
 sortSelect.addEventListener('change', () => {
     window.localStorage.setItem('sort', sortSelect.value)
+    fauxSortSpan.innerText = sortSelect.querySelector(`[value=${sortSelect.value}]`).innerText
     resetViewer()
 })
 let sort = sortSelect.value
@@ -28,11 +39,11 @@ refreshBtn.addEventListener('click', () => {
 })
 let url
 if (sort === 'top') {
-    timeSelect.classList.remove('hidden')
+    timeSelect.parentElement.classList.remove('hidden')
     let time = timeSelect.value
     url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?t=${time}`
 } else {
-    timeSelect.classList.add('hidden')
+    timeSelect.parentElement.classList.add('hidden')
     url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?limit=1000`
 }
 
@@ -52,11 +63,11 @@ getJSON(url).then((json) => {
             list.splice(index, 1)
         }
     }
-    for (const index in list) {
-        if (!(list[index].media)) {
-            list.splice(index, 1)
-        }
-    }
+    // for (const index in list) {
+    //     if (!(list[index].media)) {
+    //         list.splice(index, 1)
+    //     }
+    // }
     getThumbnails()
     updateViewer()
 }, list)
@@ -67,11 +78,11 @@ function resetViewer() {
     let sort = sortSelect.value
     let url
     if (sort === 'top') {
-        timeSelect.classList.remove('hidden')
+        timeSelect.parentElement.classList.remove('hidden')
         let time = timeSelect.value
         url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?t=${time}`
     } else {
-        timeSelect.classList.add('hidden')
+        timeSelect.parentElement.classList.add('hidden')
         url = `https://www.reddit.com/r/youtubehaiku/${sort}.json?limit=1000`
     }
     getJSON(url).then((json) => {
@@ -81,11 +92,11 @@ function resetViewer() {
                 list.splice(index, 1)
             }
         }
-        for (const index in list) {
-            if (!(list[index].media)) {
-                list.splice(index, 1)
-            }
-        }
+        // for (const index in list) {
+        //     if (!(list[index].media)) {
+        //         list.splice(index, 1)
+        //     }
+        // }
         if (list.length > 0) {
             let viewer = document.querySelector('.viewer')
             viewer.dataset.index = 0
@@ -114,7 +125,7 @@ function updateViewer() {
         document.querySelector('.thumbstrip').classList.remove('placeholder')
         let newPrev = document.createElement('div')
         let newCrnt = getPost(index)
-        newCrnt.querySelector('.link a').setAttribute('tabindex','')
+        newCrnt.querySelector('.title a').setAttribute('tabindex','')
         let newNext = document.createElement('div')
         if (list.length > 1) {
             if (index === 0) {
@@ -144,7 +155,7 @@ function getPost(index) {
     let src = list[index]
 
     let title = document.createElement('div')
-    title.classList.add('link')
+    title.classList.add('title')
 
     let link = document.createElement('a')
     link.setAttribute('tabindex','-1')
@@ -174,7 +185,7 @@ function getPost(index) {
 
     let button = document.createElement('button')
     let text = document.createElement('span')
-    text.innerText = input.checked ? 'Mark unread' : 'Mark read'
+    text.innerText = input.checked ? 'Mark unwatched' : 'Mark watched'
     let markIcon = document.createElement('img')
     let hoverIcon = document.createElement('img')
     let readIcon = document.createElement('img')
@@ -189,10 +200,10 @@ function getPost(index) {
     button.addEventListener('click', () => {
         input.checked = !input.checked
         if (input.checked) {
-            text.innerText = 'Mark unread'
+            text.innerText = 'Mark unwatched'
             readMarker.classList.add('read')
         } else {
-            text.innerText = 'Mark read'
+            text.innerText = 'Mark watched'
             readMarker.classList.remove('read')
         }
         let evt = new Event('change')
@@ -327,7 +338,7 @@ function prevPost() {
 
     prev.parentElement.classList.remove('prev')
     prev.parentElement.classList.add('current')
-    prev.querySelector('.link a').setAttribute('tabindex','')
+    prev.querySelector('.title a').setAttribute('tabindex','')
 
     if (!(index === list.length - 1)) {
         let nextPost = getPost(index + 1)
@@ -361,7 +372,7 @@ function nextPost() {
 
     next.parentElement.classList.remove('next')
     next.parentElement.classList.add('current')
-    next.querySelector('.link a').setAttribute('tabindex','')
+    next.querySelector('.title a').setAttribute('tabindex','')
 
     prev.parentElement.classList.remove('prev')
     prev.parentElement.classList.add('next')
@@ -437,8 +448,10 @@ function getRickRoll() {
     let post = document.createElement('div')
 
     let title = document.createElement('div')
-    title.classList.add('link')
-    title.innerText = 'You spend too much time on reddit.'
+    title.classList.add('title')
+    let span = document.createElement('span')
+    span.innerText = 'You spend too much time on reddit.'
+    title.appendChild(span)
 
     let thumbnail = document.createElement('div')
     thumbnail.classList.add('thumbnail')
