@@ -1,4 +1,97 @@
-const storageEnabled = testStorage()
+class SwitchInput extends HTMLElement {
+    constructor () {
+        super()
+        this.setAttribute('role','switch')
+        this.setAttribute('tabindex','0')
+        let shadow = this.attachShadow({mode: 'open'})
+        let style = document.createElement('style')
+        style.textContent = `
+            :host {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: .5em;
+            }
+            .track {
+                display: flex;
+                align-items: center;
+                height: 100%;
+                width: 100%;
+                background-color: hsl(0, 100%, 70%);
+                border-radius: .5em;
+                transition: background-color .2s;
+            }
+            .knob {
+                height: calc(1em - 4px);
+                width: calc(1em - 4px);
+                border-radius: 50%;
+                background: white;
+                transform: translateX(2px);
+                transition: .2s transform;
+                box-shadow: 0 0 2px 2px rgba(0,0,0,.2)
+            }
+            .checked {
+                background-color: hsl(120, 100%, 70%)    
+            }
+            .checked .knob {
+                transform: translateX(calc(1em + 2px))
+            }
+        `
+        let knob = document.createElement('div')
+        knob.classList.add('knob')
+        let track = document.createElement('div')
+        track.classList.add('track')
+        track.appendChild(knob)
+
+        if (this.hasAttribute('checked')) {
+            track.classList.add('checked')
+            this.setAttribute('aria-checked','true')
+            this.value = true;
+        } else {
+            this.setAttribute('aria-checked','false')
+            this.value = false;
+        }
+        
+        shadow.appendChild(style)
+        shadow.appendChild(track)
+
+        window.requestAnimationFrame(() => {
+            let height = parseInt(window.getComputedStyle(this).height);
+            let style = document.createElement('style')
+            style.textContent = `
+                :host { 
+                    font-size: ${height}px;
+                    height: ${height}px!important;
+                    width: ${2*height}px;
+                }
+            `
+            shadow.appendChild(style)
+        })
+        this.addEventListener('keydown', (e) => {
+            if (e.code === 'Enter' || e.code === 'Space') {
+                e.preventDefault()
+                this.click()
+            }
+        })
+        this.addEventListener('click', () => {
+            this.value = !this.value
+            let evt = new Event('change')
+            this.dispatchEvent(evt)
+        })
+        this.addEventListener('change', () => {
+            if (this.value) {
+                this.setAttribute('aria-checked','true')
+                track.classList.add('checked')
+            } else {
+                this.setAttribute('aria-checked','false')
+                track.classList.remove('checked')
+            }
+        })
+    }
+}
+customElements.define('switch-input', SwitchInput)
+
+let storageEnabled = testStorage()
 
 let timeSelect = document.querySelector('.time')
 let fauxTimeSpan = document.querySelector('.time~.faux span')
@@ -43,6 +136,81 @@ refreshBtn.addEventListener('click', () => {
     refreshBtn.classList.add('spinny');
     resetViewer() 
 })
+
+let settingsBtn = document.querySelector('.settings button') 
+settingsBtn.addEventListener('click', () => {
+    settingsBtn.parentElement.classList.toggle('open')
+})
+let clickOff = document.querySelector('.settings .click-off')
+clickOff.addEventListener('click', () => {
+    clickOff.parentElement.classList.remove('open')
+})
+
+let newTabSwitch = document.querySelector('#new-tab switch-input')
+if (storageEnabled) {
+    let postsInNewTabs = localStorage.getItem('postsInNewTabs')
+    if (postsInNewTabs !== null) {
+        newTabSwitch.value = (postsInNewTabs === 'true')
+        let evt = new Event('change')
+        newTabSwitch.dispatchEvent(evt)
+    } else {
+        localStorage.setItem('postsInNewTabs',true)
+        newTabSwitch.value = true
+        let evt = new Event('change')
+        newTabSwitch.dispatchEvent(evt)
+    }
+}
+newTabSwitch.addEventListener('change', () => {
+    if (storageEnabled) {
+        localStorage.setItem('postsInNewTabs',newTabSwitch.value)
+        updateViewer()
+    } else {
+        errorJiggle(newTabSwitch)
+    }
+})
+
+let watchedSwitch = document.querySelector('#remember-watched switch-input')
+if (storageEnabled) {
+    let rememberWatched = localStorage.getItem('rememberWatched')
+    if (rememberWatched !== null) {
+        watchedSwitch.value = (rememberWatched === 'true')
+        let evt = new Event('change')
+        watchedSwitch.dispatchEvent(evt)
+    } else {
+        localStorage.setItem('rememberWatched',true)
+        watchedSwitch.value = true
+        let evt = new Event('change')
+        watchedSwitch.dispatchEvent(evt)
+    }
+}
+watchedSwitch.addEventListener('change', () => {
+    if (storageEnabled) {
+        localStorage.setItem('rememberWatched',watchedSwitch.value)
+    } else {
+        errorJiggle(watchedSwitch)
+    }
+})
+
+let watchedCount = document.querySelector('#clear-watched span')
+if (storageEnabled) {
+    let readList = localStorage.getItem('readList')
+    if (readList) {
+        readList = JSON.parse(readList)
+        watchedCount.innerText = readList.length + ' watched posts'
+    } else {
+        watchedCount.innerText = ''
+    }
+}
+let forgetBtn = document.querySelector('#clear-watched button')
+forgetBtn.addEventListener('click', () => {
+    if (storageEnabled) {
+        watchedCount.innerText = ''
+        localStorage.setItem('readList','')
+        updateThumbnails()
+        updateViewer()
+    }
+})
+
 let url
 if (sort === 'top') {
     timeSelect.parentElement.classList.remove('hidden')
@@ -156,12 +324,19 @@ function getPost(index) {
     let link = document.createElement('a')
     link.setAttribute('tabindex','-1')
     link.href = origin + src.permalink
-    link.target = '_blank'
+    
     link.innerText = src.title
-
-    let launchIcon = document.createElement('img')
-    launchIcon.src = 'launch.svg'
-    link.appendChild(launchIcon)
+    
+    if (storageEnabled) {
+        let postsInNewTabs = (localStorage.getItem('postsInNewTabs') === 'true')
+        if (postsInNewTabs) {
+            link.target = '_blank'
+            let launchIcon = document.createElement('img')
+            launchIcon.alt = 'Open in new tab'
+            launchIcon.src = 'launch.svg'
+            link.appendChild(launchIcon)
+        }
+    }
 
     title.appendChild(link)
 
@@ -188,7 +363,9 @@ function getPost(index) {
     let hoverIcon = document.createElement('img')
     let readIcon = document.createElement('img')
     markIcon.src = 'eye.svg'
+    markIcon.alt = 'Mark post as unwatched'
     hoverIcon.src = 'hide.svg'
+    hoverIcon.alt = 'Mark post as watched'
     readIcon.src = 'read.svg'
     button.appendChild(markIcon)
     button.appendChild(hoverIcon)
@@ -197,16 +374,25 @@ function getPost(index) {
 
     button.addEventListener('click', () => {
         if (storageEnabled) {
-            input.checked = !input.checked
-            if (input.checked) {
-                text.innerText = 'Mark unwatched'
-                readMarker.classList.add('read')
+            let rememberingWatched = (localStorage.getItem('rememberWatched') === 'true')
+            if (rememberingWatched) {
+                input.checked = !input.checked
+                if (input.checked) {
+                    text.innerText = 'Mark unwatched'
+                    readMarker.classList.add('read')
+                } else {
+                    text.innerText = 'Mark watched'
+                    readMarker.classList.remove('read')
+                }
+                let evt = new Event('change')
+                input.dispatchEvent(evt)
             } else {
-                text.innerText = 'Mark watched'
-                readMarker.classList.remove('read')
+                cookieMessageReceived = true
+                errorJiggle(button)
+                document.querySelector('.settings').classList.add('open')
+                setTimeout(() => {document.querySelector('#remember-watched switch-input').focus()},500)
+                
             }
-            let evt = new Event('change')
-            input.dispatchEvent(evt)
         } else {
             errorJiggle(button)
         }
@@ -233,6 +419,7 @@ function getPost(index) {
             }
         }
         updateThumbnails()
+        updateCount()
     })
 
     readMarker.appendChild(input)
@@ -418,6 +605,8 @@ function updateThumbnails() {
                 } else {
                     buttons[i].classList.remove('read')
                 }
+            } else {
+                buttons[i].classList.remove('read')
             }
         }
     }
@@ -431,6 +620,18 @@ function updateThumbnails() {
 
     let selected = thumbstrip.querySelectorAll('button')[index]
     selected.classList.add('selected')
+}
+function updateCount() {
+    let watchedCount = document.querySelector('#clear-watched span')
+    if (storageEnabled) {
+        let readList = localStorage.getItem('readList')
+        if (readList) {
+            readList = JSON.parse(readList)
+            watchedCount.innerText = readList.length + ' watched posts'
+        } else {
+            watchedCount.innerText = ''
+        }
+    }
 }
 function hideRead() {
     if (storageEnabled) {

@@ -39,6 +39,24 @@
             </div>
             <button class='hide-read'><img src='eye.svg'><img src='hide.svg'>Hide watched</button>
             <button class='refresh'><img src='refresh.svg'>Refresh</button>
+            <div class='settings'>
+                <button><img src='settings.svg'>Settings</button>
+                <div class='click-off'></div>
+                <div class='pane'>
+                    <div class='setting' id='new-tab'>
+                        <span>Open post links in new tab</span>
+                        <switch-input></switch-input>
+                    </div>
+                    <div class='setting' id='remember-watched'>
+                        <span>Remember watched posts</span>
+                        <switch-input></switch-input>
+                    </div>
+                    <div class='setting' id='clear-watched'>
+                        <span></span>
+                        <button><img src='trash.svg'>Clear history</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
     <div class='viewer' data-index=0>

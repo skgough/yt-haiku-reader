@@ -1,4 +1,8 @@
 @import url(fonts.css);
+*:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(212, 100%, 75%)
+}
 body {
     margin: 0;
     padding: 0;
@@ -23,6 +27,9 @@ header > div {
 header > div > * {
     margin: 0 .5ch;
 }
+.hidden {
+    display: none;
+}
 .select {
     position: relative;
 }
@@ -42,7 +49,7 @@ header > div > * {
 .select .faux img {
     margin-left: auto;
 }
-select, select~.faux, header > div button {
+select~.faux, header > div button {
     box-sizing: border-box;
     height: 1.75rem;
     background: hsl(228, 5%, 25%);
@@ -59,9 +66,22 @@ select:focus-visible,
 header > div button:focus-visible {
     color: hsl(212, 100%, 75%);
 }
-.hidden {
-    display: none;
+select {
+    box-sizing: border-box;
+    height: calc(1.75rem - 4px);
+    margin: 2px;
+    background: hsl(228, 5%, 25%);
+    color: white;
+    border: 0;
+    border-radius: calc(.25rem - 2px);
+    font: 600 .8rem/1.75rem 'IBM Plex Sans';
+    padding: 0 .5rem;
+    user-select: none;
 }
+select:focus-visible {
+    box-shadow: 0 0 0 4px hsl(212, 100%, 75%)
+}
+
 select option {
     color: white;
 }
@@ -107,6 +127,78 @@ header > div button img {
 @keyframes refresh {
     from {transform: rotate(0)}
     to {transform: rotate(360deg)}
+}
+
+.settings {
+    position: relative;
+}
+
+.settings > button > img {
+    transition: transform .2s;
+}
+
+.settings > div.pane {
+    background-color: hsl(228, 5%, 15%);
+    z-index: 2;
+    white-space: nowrap;
+    right: 0;
+    padding: .25rem .75rem;
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(0);
+    transition: .2s step-end visibility, .2s opacity, .1s transform;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,.5);
+    border-radius: .5rem;
+}
+.pane::before {
+    content:'';
+    display:block;
+    width:0;
+    height:0;
+    position:absolute;
+    border-left: .5rem solid transparent;
+    border-bottom: .5rem solid hsl(228, 5%, 15%);
+    border-right: .5rem solid transparent;
+    top: -.5rem;
+    right: 1rem;
+}
+.settings.open > button > img {
+    transform: rotate(60deg);
+}
+.settings.open > .pane {
+    visibility: visible;
+    transition: .0s visibility, .2s opacity, .1s transform;
+    opacity: 1;
+    transform: translateY(.75em)
+}
+.settings .click-off {
+    display: none;
+    z-index: 1;
+    position: fixed;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent
+}
+.settings.open .click-off {
+    display: block;
+}
+.settings .setting {
+    display: flex;
+    align-items: center;
+    margin: .5rem 0;
+}
+.settings .setting span {
+    margin-right: 2em;
+}
+.settings .setting switch-input {
+    height: 1.35em;
+    margin-left: auto;
+}
+#clear-watched button {
+    margin-left: auto;
 }
 .viewer,.thumbs {
     max-width: 100rem;
@@ -163,6 +255,7 @@ header > div button img {
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
+    border-radius: .25rem;
     text-overflow: ellipsis;
     color: white;
     text-decoration: none;
@@ -327,6 +420,7 @@ header > div button img {
     background-repeat: no-repeat;
     background-size: 40%;
     background-position: center 60%;
+    border-radius: .5rem;
     font-size: 0;
     border: 0;
     filter: drop-shadow(2px 2px 4px black);
