@@ -1,4 +1,7 @@
 @import url(fonts.css);
+* {
+    -webkit-tap-highlight-color: transparent;
+}
 *:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px hsl(212, 100%, 75%)
@@ -67,6 +70,7 @@ header > div button:focus-visible {
     color: hsl(212, 100%, 75%);
 }
 select {
+    touch-action: manipulation;
     box-sizing: border-box;
     height: calc(1.75rem - 4px);
     margin: 2px;
@@ -86,6 +90,7 @@ select option {
     color: white;
 }
 header > div button {
+    touch-action: manipulation;
     display: flex;
 }
 header > div button img {
@@ -174,6 +179,7 @@ header > div button img {
 }
 .settings .click-off {
     display: none;
+    touch-action: manipulation;
     z-index: 1;
     position: fixed;
     bottom: 0;
@@ -194,10 +200,12 @@ header > div button img {
     margin-right: 2em;
 }
 .settings .setting switch-input {
+    touch-action: manipulation;
     height: 1.35em;
     margin-left: auto;
 }
 #clear-watched button {
+    touch-action: manipulation;
     margin-left: auto;
 }
 .viewer,.thumbs {
@@ -414,6 +422,7 @@ header > div button img {
 
 .next-button,
 .prev-button {
+    touch-action: manipulation;
     position: absolute;
     cursor: pointer;
     background-color: transparent;
@@ -440,6 +449,9 @@ header > div button img {
     opacity: 1;
 }
 @media (pointer: coarse) {
+    html {
+        font-size: 110%
+    }
     .next-button,
     .prev-button {
         opacity: 1;
@@ -500,6 +512,7 @@ header > div button img {
 .thumbstrip .placeholder {
     display: inline-block;
     border: 0;
+    touch-action: manipulation;
     font-size: 0;
     margin: 0 .5rem 0 0;
     padding: 0;
