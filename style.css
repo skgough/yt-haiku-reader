@@ -165,7 +165,7 @@ header > div button img {
     border-left: .5rem solid transparent;
     border-bottom: .5rem solid hsl(228, 5%, 15%);
     border-right: .5rem solid transparent;
-    top: -.5rem;
+    top: calc(-.5rem + 1px);
     right: 1rem;
 }
 .settings.open > button > img {

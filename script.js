@@ -151,19 +151,22 @@ if (storageEnabled) {
     let postsInNewTabs = localStorage.getItem('postsInNewTabs')
     if (postsInNewTabs !== null) {
         newTabSwitch.value = (postsInNewTabs === 'true')
-        let evt = new Event('change')
-        newTabSwitch.dispatchEvent(evt)
+        
     } else {
         localStorage.setItem('postsInNewTabs',true)
         newTabSwitch.value = true
-        let evt = new Event('change')
-        newTabSwitch.dispatchEvent(evt)
     }
+    let evt = new Event('change')
+    newTabSwitch.dispatchEvent(evt)
 }
 newTabSwitch.addEventListener('change', () => {
     if (storageEnabled) {
-        localStorage.setItem('postsInNewTabs',newTabSwitch.value)
-        updateViewer()
+        localStorage.setItem('postsInNewTabs', newTabSwitch.value)
+        let newTarget = newTabSwitch.value
+                            ? '_blank'
+                            : ''
+        let postLinks = document.querySelectorAll('.post .title a') 
+        postLinks.forEach(link => link.setAttribute('target', newTarget))
     } else {
         errorJiggle(newTabSwitch)
     }
@@ -174,14 +177,12 @@ if (storageEnabled) {
     let rememberWatched = localStorage.getItem('rememberWatched')
     if (rememberWatched !== null) {
         watchedSwitch.value = (rememberWatched === 'true')
-        let evt = new Event('change')
-        watchedSwitch.dispatchEvent(evt)
     } else {
         localStorage.setItem('rememberWatched',true)
         watchedSwitch.value = true
-        let evt = new Event('change')
-        watchedSwitch.dispatchEvent(evt)
     }
+    let evt = new Event('change')
+    watchedSwitch.dispatchEvent(evt)
 }
 watchedSwitch.addEventListener('change', () => {
     if (storageEnabled) {
@@ -191,21 +192,26 @@ watchedSwitch.addEventListener('change', () => {
     }
 })
 
-let watchedCount = document.querySelector('#clear-watched span')
+let markWatchedOnLoadSwitch = document.querySelector('#watch-on-load switch-input')
 if (storageEnabled) {
-    let readList = localStorage.getItem('readList')
-    if (readList) {
-        readList = JSON.parse(readList)
-        watchedCount.innerText = readList.length + ' watched posts'
+    let markWatchedOnLoad = localStorage.getItem('markWatchedOnLoad')
+    if (markWatchedOnLoad !== null) {
+        markWatchedOnLoadSwitch.value = (markWatchedOnLoad === 'true')
     } else {
-        watchedCount.innerText = ''
+        localStorage.setItem('markWatchedOnLoad',true)
+        markWatchedOnLoadSwitch.value = true
     }
+    let evt = new Event('change')
+    markWatchedOnLoadSwitch.dispatchEvent(evt)
 }
+
+let watchedCount = updateCount()
+
 let forgetBtn = document.querySelector('#clear-watched button')
 forgetBtn.addEventListener('click', () => {
     if (storageEnabled) {
-        watchedCount.innerText = ''
         localStorage.setItem('readList','')
+        updateCount()
         updateThumbnails()
         updateViewer()
     }
@@ -304,6 +310,21 @@ function updateViewer() {
         crnt.replaceWith(newCrnt)
         prev.replaceWith(newPrev)
         next.replaceWith(newNext)
+        
+        if (storageEnabled) {
+            let markWatchedOnLoad = (localStorage.getItem('markWatchedOnLoad') === 'true')
+            if (markWatchedOnLoad) {
+                let readList = localStorage.getItem('readList')
+                if (readList) {
+                    readList = JSON.parse(readList)
+                    let postID = crnt.dataset.id
+                    let search = readList.find((id) => id === postID)
+                    if (search === undefined) {
+                        crnt.querySelector('.read-marker button').click()
+                    }
+                }
+            }
+        }
         updateThumbnails()
     } else {
         document.querySelector('.post.current > div').replaceWith(getRickRoll())
@@ -317,6 +338,7 @@ function updateViewer() {
 function getPost(index) {
     let post = document.createElement('div')
     let src = list[index]
+    post.dataset.id = src.id
 
     let title = document.createElement('div')
     title.classList.add('title')
@@ -391,7 +413,6 @@ function getPost(index) {
                 errorJiggle(button)
                 document.querySelector('.settings').classList.add('open')
                 setTimeout(() => {document.querySelector('#remember-watched switch-input').focus()},500)
-                
             }
         } else {
             errorJiggle(button)
@@ -531,7 +552,7 @@ function prevPost() {
     prev.parentElement.classList.add('current')
     prev.querySelector('.title a').setAttribute('tabindex','')
 
-    if (!(index === list.length - 1)) {
+    if (index !== list.length - 1) {
         let nextPost = getPost(index + 1)
         crnt.replaceWith(nextPost)
     } else {
@@ -539,7 +560,7 @@ function prevPost() {
         crnt.replaceWith(empty)
     }
 
-    if (!(index === 0)) {
+    if (index !== 0) {
         let prevPost = getPost(index - 1)
         next.replaceWith(prevPost)
     } else {
@@ -549,6 +570,20 @@ function prevPost() {
 
     viewer.dataset.index = index
     updateThumbnails()
+    if (storageEnabled) {
+        let markWatchedOnLoad = (localStorage.getItem('markWatchedOnLoad') === 'true')
+        if (markWatchedOnLoad) {
+            let readList = localStorage.getItem('readList')
+            if (readList) {
+                readList = JSON.parse(readList)
+                let postID = next.dataset.id
+                let search = readList.find((id) => id === postID)
+                if (search === undefined) {
+                    prev.querySelector('.read-marker button').click()
+                }
+            }
+        }
+    }
 }
 function nextPost() {
     let viewer = document.querySelector('.viewer')
@@ -568,14 +603,14 @@ function nextPost() {
     prev.parentElement.classList.remove('prev')
     prev.parentElement.classList.add('next')
 
-    if (!(index === list.length - 1)) {
+    if (index !== list.length - 1) {
         let nextPost = getPost(index + 1)
         prev.replaceWith(nextPost)
     } else {
         let empty = document.createElement('div')
         prev.replaceWith(empty)
     }
-    if (!(index === 0)) {
+    if (index !== 0) {
         let prevPost = getPost(index - 1)
         crnt.replaceWith(prevPost)
     } else {
@@ -585,6 +620,20 @@ function nextPost() {
 
     viewer.dataset.index = index
     updateThumbnails()
+    if (storageEnabled) {
+        let markWatchedOnLoad = (localStorage.getItem('markWatchedOnLoad') === 'true')
+        if (markWatchedOnLoad) {
+            let readList = localStorage.getItem('readList')
+            if (readList) {
+                readList = JSON.parse(readList)
+                let postID = next.dataset.id
+                let search = readList.find((id) => id === postID)
+                if (search === undefined) {
+                    next.querySelector('.read-marker button').click()
+                }
+            }
+        }
+    }
 }
 
 function updateThumbnails() {
@@ -627,7 +676,12 @@ function updateCount() {
         let readList = localStorage.getItem('readList')
         if (readList) {
             readList = JSON.parse(readList)
-            watchedCount.innerText = readList.length + ' watched posts'
+            if (readList.length > 0) {
+                watchedCount.innerText = readList.length + ' watched posts'
+            } else {
+                watchedCount.innerText = ''
+            }
+            return readList.length
         } else {
             watchedCount.innerText = ''
         }
