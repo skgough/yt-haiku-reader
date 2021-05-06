@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff4500">
+    <link rel="mask-icon" href="assets/safari-pinned-tab.svg" color="#ff4500">
     <meta name="msapplication-TileColor" content="#3d3e43">
     <meta name="theme-color" content="#3d3e43">
     <title>Youtube Haiku</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <link rel="icon" href="favicon.ico"/>
+    <link rel="icon" href="assets/favicon.ico"/>
+    <script src="functions.js"></script>
+    <script src="switch-input/switch-input.js"></script>
     <script defer src="script.js"></script>
 </head>
 
@@ -30,7 +32,7 @@
                 </select>
                 <div class='faux'>
                     <span>Hot</span>
-                    <img src='expand.svg'>
+                    <img src='assets/expand.svg'>
                 </div>
             </div>
             <div class='select hidden'>
@@ -42,13 +44,13 @@
                 </select>
                 <div class='faux'>
                     <span>Today</span>
-                    <img src='expand.svg'>
+                    <img src='assets/expand.svg'>
                 </div>
             </div>
-            <button class='hide-read'><img src='eye.svg'><img src='hide.svg'>Hide watched</button>
-            <button class='refresh'><img src='refresh.svg'>Refresh</button>
+            <button class='hide-read'><img src='assets/eye.svg'><img src='assets/hide.svg'>Hide watched</button>
+            <button class='refresh'><img src='assets/refresh.svg'>Refresh</button>
             <div class='settings'>
-                <button><img src='settings.svg'>Settings</button>
+                <button><img src='assets/settings.svg'>Settings</button>
                 <div class='click-off'></div>
                 <div class='pane'>
                     <div class='setting' id='new-tab'>
@@ -65,7 +67,7 @@
                     </div> 
                     <div class='setting' id='clear-watched'>
                         <span></span>
-                        <button><img src='trash.svg'>Clear history</button>
+                        <button><img src='assets/trash.svg'>Clear history</button>
                     </div>
                 </div>
             </div>

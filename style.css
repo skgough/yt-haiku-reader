@@ -194,6 +194,7 @@ header > div button img {
 .settings .setting {
     display: flex;
     align-items: center;
+    user-select: none;
     margin: .5rem 0;
 }
 .settings .setting span {
@@ -282,6 +283,7 @@ header > div button img {
 }
 .post .title a[target="_blank"]:hover img,
 .post .title a[target="_blank"]:focus-visible img {
+    user-select: none;
     display: inline-block;
 }
 .post .title a:visited {
@@ -463,10 +465,10 @@ header > div button img {
 }
 
 .next-button {
-    background-image: url(next.svg);
+    background-image: url(assets/next.svg);
 }
 .prev-button {
-    background-image: url(prev.svg)
+    background-image: url(assets/prev.svg)
 }
 
 .post.current .next-button,
