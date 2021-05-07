@@ -152,9 +152,11 @@ header > div button img {
     visibility: hidden;
     opacity: 0;
     transform: translateY(0);
-    transition: .2s step-end visibility, .2s opacity, .1s transform;
+    transition: .2s step-end visibility, .2s opacity, .1s transform, .2s filter;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,.5);
+    filter: blur(25px);
     border-radius: .5rem;
+    will-change: filter;
 }
 .pane::before {
     content:'';
@@ -175,6 +177,7 @@ header > div button img {
     visibility: visible;
     transition: .0s visibility, .2s opacity, .1s transform;
     opacity: 1;
+    filter: none;
     transform: translateY(.75em)
 }
 .settings .click-off {

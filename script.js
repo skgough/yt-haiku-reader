@@ -111,6 +111,13 @@ if (storageEnabled) {
     let evt = new Event('change')
     markWatchedOnLoadSwitch.dispatchEvent(evt)
 }
+markWatchedOnLoadSwitch.addEventListener('change', () => {
+    if (storageEnabled) {
+        localStorage.setItem('markWatchedOnLoad',markWatchedOnLoadSwitch.value)
+    } else {
+        errorJiggle(markWatchedOnLoadSwitch)
+    }
+})
 
 let watchedCount = updateCount()
 

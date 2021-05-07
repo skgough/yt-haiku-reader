@@ -34,6 +34,7 @@ function resetViewer() {
         }
     }, list)
 }
+
 function updateViewer() {
     let viewer = document.querySelector('.viewer')
     let index = parseInt(viewer.dataset.index)
@@ -61,6 +62,7 @@ function updateViewer() {
         crnt.replaceWith(newCrnt)
         prev.replaceWith(newPrev)
         next.replaceWith(newNext)
+        markWatchedOnLoad()
         updateThumbnails()
     } else {
         document.querySelector('.post.current > div').replaceWith(getRickRoll())
@@ -202,6 +204,7 @@ function getPost(index) {
     nextBtn.tabindex = 1
     nextBtn.addEventListener('click', () => {
         nextPost()
+        markWatchedOnLoad()
     })
 
     let prevBtn = document.createElement('button')
@@ -209,6 +212,7 @@ function getPost(index) {
     prevBtn.innerText = 'Previous post'
     prevBtn.addEventListener('click', () => {
         prevPost()
+        markWatchedOnLoad()
     })
 
     post.appendChild(title)
@@ -220,10 +224,12 @@ function getPost(index) {
 
     return post
 }
+
 async function getJSON(url) {
     const request = await fetch(url)
     return request.json()
 }
+
 function getThumbnails() {
     let thumbstrip = document.querySelector('.thumbstrip')
     let oldNails = thumbstrip.querySelectorAll('.thumbnail')
@@ -261,6 +267,7 @@ function getThumbnails() {
         thumbstrip.appendChild(thumbnail)
     }
 }
+
 function htmlDecode(input) {
     let e = document.createElement('textarea');
     e.innerHTML = input;
@@ -270,6 +277,7 @@ function htmlDecode(input) {
     template.innerHTML = text
     return template.content.firstChild
 }
+
 function prevPost() {
     let viewer = document.querySelector('.viewer')
     let index = parseInt(viewer.dataset.index) - 1
@@ -307,6 +315,7 @@ function prevPost() {
     viewer.dataset.index = index
     updateThumbnails()
 }
+
 function nextPost() {
     let viewer = document.querySelector('.viewer')
     let index = parseInt(viewer.dataset.index) + 1
@@ -378,6 +387,7 @@ function updateThumbnails() {
     let selected = thumbstrip.querySelectorAll('button')[index]
     selected.classList.add('selected')
 }
+
 function updateCount() {
     let watchedCount = document.querySelector('#clear-watched span')
     if (storageEnabled) {
@@ -395,6 +405,7 @@ function updateCount() {
         }
     }
 }
+
 function hideRead() {
     if (storageEnabled) {
         let readList = localStorage.getItem('readList')
@@ -418,6 +429,7 @@ function hideRead() {
         errorJiggle(hideReadBtn)
     }
 }
+
 function getRickRoll() {
     let post = document.createElement('div')
 
@@ -454,6 +466,7 @@ function testStorage() {
         return false;
     }
 }
+
 function errorJiggle(element) {
     element.classList.remove('jiggly'); // reset animation
     void element.offsetWidth; // trigger reflow
@@ -466,4 +479,26 @@ function errorJiggle(element) {
             cookieMessageReceived = true
         }
     }, 200)
+}
+
+function markWatchedOnLoad() {
+    if (storageEnabled) {
+        let markWatchedOnLoad = (localStorage.getItem('markWatchedOnLoad') === 'true')
+        let rememberWatched = (localStorage.getItem('rememberWatched') === 'true')
+        if (markWatchedOnLoad && rememberWatched) {
+            console.log('marking watched')
+            let current = document.querySelector('.post.current > div')
+            let id = current.dataset.id
+            let readList = localStorage.getItem('readList')
+            if (readList) {
+                readList = JSON.parse(readList)
+                let search = readList.find((postID) => postID === id)
+                if (!search) {
+                    current.querySelector('.read-marker button').click()
+                }
+            } else {
+                current.querySelector('.read-marker button').click()
+            }
+        }
+    }
 }
