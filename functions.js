@@ -486,7 +486,6 @@ function markWatchedOnLoad() {
         let markWatchedOnLoad = (localStorage.getItem('markWatchedOnLoad') === 'true')
         let rememberWatched = (localStorage.getItem('rememberWatched') === 'true')
         if (markWatchedOnLoad && rememberWatched) {
-            console.log('marking watched')
             let current = document.querySelector('.post.current > div')
             let id = current.dataset.id
             let readList = localStorage.getItem('readList')
