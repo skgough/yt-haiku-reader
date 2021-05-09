@@ -1,3 +1,9 @@
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+        .register('sw.js')
+        .then(() => { console.log('Service Worker Registered') })
+}
+
 let storageEnabled = testStorage()
 
 let timeSelect = document.querySelector('.time')
@@ -34,7 +40,7 @@ sortSelect.addEventListener('change', () => {
 let sort = sortSelect.value
 
 let hideReadBtn = document.querySelector('.hide-read')
-hideReadBtn.addEventListener('click', () => { hideRead() })
+hideReadBtn.addEventListener('click', hideRead)
 
 let refreshBtn = document.querySelector('.refresh')
 refreshBtn.addEventListener('click', () => { 

@@ -465,6 +465,9 @@ header > div button img {
     .post.prev .thumbnail {
         filter: none;
     }
+    .post .title a img {
+        display: inline-block;
+    }
 }
 
 .next-button {
