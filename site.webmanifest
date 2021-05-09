@@ -3,17 +3,17 @@
     "short_name": "YT-Haiku",
     "icons": [
         {
-            "src": "/android-chrome-192x192.png",
+            "src": "assets/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/android-chrome-512x512.png",
+            "src": "assets/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
     ],
-    "start_url": "/",
+    "start_url": "https://skgough.github.io/yt-haiku-reader/",
     "theme_color": "#3d3e43",
     "background_color": "#ff4500",
     "display": "standalone"
