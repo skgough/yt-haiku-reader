@@ -1,5 +1,5 @@
-[!NOTE]
-This doesn't work anymore since Reddit turned off the free API.
+>[!NOTE]
+>This doesn't work anymore since Reddit turned off the free API.
 
 # yt-haiku-reader
 This is a webapp I made to make using reddit on my desktop more enjoyable. It uses the Reddit rest API to make an alternative frontend of r/YoutubeHaiku 
